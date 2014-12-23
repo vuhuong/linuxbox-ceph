@@ -177,6 +177,14 @@
 
 namespace bi = boost::intrusive;
 
+#define MSG_MAGIC_XIO          0x0002
+#define MSG_MAGIC_TRACE_XCON   0x0004
+#define MSG_MAGIC_TRACE_DTOR   0x0008
+#define MSG_MAGIC_TRACE_HDR    0x0010
+#define MSG_MAGIC_TRACE_XIO    0x0020
+#define MSG_MAGIC_TRACE_XMSGR    0x0040
+#define MSG_MAGIC_TRACE_CTR    0x0080
+
 #define MSG_SPECIAL_HANDLING_REDUPE	1
 
 class Message : public RefCountedObject {
