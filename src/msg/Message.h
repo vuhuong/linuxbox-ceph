@@ -177,6 +177,8 @@
 
 namespace bi = boost::intrusive;
 
+#define MSG_SPECIAL_HANDLING_REDUPE	1
+
 class Message : public RefCountedObject {
 protected:
   ceph_msg_header  header;      // headerelope
@@ -199,6 +201,7 @@ protected:
   ConnectionRef connection;
 
   uint32_t magic;
+  uint32_t special_handling;
 
   bi::list_member_hook<> dispatch_q;
 
@@ -240,6 +243,7 @@ public:
   Message()
     : connection(NULL),
       magic(0),
+      special_handling(0),
       completion_hook(NULL),
       byte_throttler(NULL),
       msg_throttler(NULL),
@@ -299,6 +303,8 @@ public:
 
   uint32_t get_magic() { return magic; }
   void set_magic(int _magic) { magic = _magic; }
+  uint32_t get_special_handling() { return special_handling; }
+  void set_special_handling(int n) { special_handling = n; }
 
   /*
    * If you use get_[data, middle, payload] you shouldn't
