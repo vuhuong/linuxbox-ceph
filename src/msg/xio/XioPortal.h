@@ -260,7 +260,7 @@ public:
 	    switch (xs->type) {
 	    case XioSubmit::OUTGOING_MSG: /* it was an outgoing 1-way */
 	      xmsg = static_cast<XioMsg*>(xs);
-	      if (unlikely(!xs->xcon->conn))
+	      if (unlikely(!xcon->conn || !xcon->is_connected()))
 		code = ENOTCONN;
 	      else {
                 /* XXX guard Accelio send queue (should be safe to rely
@@ -280,6 +280,9 @@ public:
 		  print_xio_msg_hdr(msgr->cct, "xio_send_msg", xmsg->hdr, msg);
 		  print_ceph_msg(msgr->cct, "xio_send_msg", xmsg->m);
 		}
+                /* get the right Accelio's errno code */
+                if (unlikely(code))
+                  code = xio_errno();
 	      } /* !ENOTCONN */
 	      if (unlikely(code)) {
 		switch (code) {
@@ -290,11 +293,11 @@ public:
 		}
 		  break;
 		default:
-		  xs->xcon->msg_send_fail(xmsg, code);
+		  xcon->msg_send_fail(xmsg, code);
 		  break;
 		};
 	      } else {
-		xs->xcon->send.set(msg->timestamp); // need atomic?
+		xcon->send.set(msg->timestamp); // need atomic?
 		xcon->send_ctr += xmsg->hdr.msg_cnt; // only inc if cb promised
 	      }
 	      break;
